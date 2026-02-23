@@ -1,0 +1,8 @@
+name = "cf-ai-latency-monitor"
+compatibility_date = "2026-02-23"
+main = "./worker/index.js"
+
+[assets]
+not_found_handling = "single-page-application"
+run_worker_first = ["/api/*"]
+directory = "./dist"
