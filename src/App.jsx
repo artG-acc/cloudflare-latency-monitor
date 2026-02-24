@@ -1,35 +1,52 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import "./App.css";
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [apiResult, setApiResult] = useState(null);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function testApi() {
+    setLoading(true);
+    setError("");
+    setApiResult(null);
+
+    try {
+      const res = await fetch("/api/ok");
+
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+
+      const data = await res.json();
+      setApiResult(data);
+    } catch (err) {
+      setError(err?.message || "Request failed");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div style={{ padding: 24, fontFamily: "system-ui, sans-serif" }}>
+      <h1>Latency Monitor</h1>
+      <p>Day 2: React UI calling Worker API</p>
 
-export default App
+      <button onClick={testApi} disabled={loading}>
+        {loading ? "Calling /api/ok..." : "Test /api/ok"}
+      </button>
+
+      {error && (
+        <p style={{ marginTop: 12 }}>
+          <strong>Error:</strong> {error}
+        </p>
+      )}
+
+      {apiResult && (
+        <pre style={{ marginTop: 12, padding: 12, border: "1px solid #ddd" }}>
+          {JSON.stringify(apiResult, null, 2)}
+        </pre>
+      )}
+    </div>
+  );
+}
